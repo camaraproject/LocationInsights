@@ -33,4 +33,4 @@ The sub project has no (pre)releases yet, work in progress is within the main br
 * Mailing List
     * (NOTE: mailing list need still to be created - thanks for your patience)
     * Subscribe / Unsubscribe to the mailing list of this Sub Project <https://lists.camaraproject.org/g/sp-locationinsights>.
-    * A message to the community of this Sub Project can be sent using <sp-locationinsights@lists.camaraproject.org >.
+    * A message to the community of this Sub Project can be sent using <sp-locationinsights@lists.camaraproject.org>.
