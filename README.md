@@ -29,8 +29,7 @@ The sub project has no (pre)releases yet, work in progress is within the main br
 * Meetings
     * [Registration/Join] (Meeting link tbd)
     * Schedule: tbd
-    * Minutes: Access [meeting minutes] (update this link to your wiki page using the "Share" link).
+    * Minutes: Access [meeting minutes](https://wiki.camaraproject.org/x/sACeAQ)
 * Mailing List
-    * (NOTE: mailing list need still to be created - thanks for your patience)
     * Subscribe / Unsubscribe to the mailing list of this Sub Project <https://lists.camaraproject.org/g/sp-location-insights>.
     * A message to the community of this Sub Project can be sent using <sp-location-insights@lists.camaraproject.org>.
