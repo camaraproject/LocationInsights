@@ -27,9 +27,10 @@ The sub project has no (pre)releases yet, work in progress is within the main br
 
 ## Contributing
 * Meetings
-    * [Registration/Join] (Meeting link tbd)
-    * Schedule: tbd
+    * Schedule: bi-weekly (odd weeks), Thursday, 09:00am CET/CEST
+    * Meeting link: [Registration/Join](https://zoom-lfx.platform.linuxfoundation.org/meeting/99479758031?password=c705dd6f-a1c5-44e4-af97-331a18395fb8)
     * Minutes: Access [meeting minutes](https://wiki.camaraproject.org/x/sACeAQ)
+    * Slack channel: [camara-project.slack.com](https://camara-project.slack.com/archives/C07BHCZ3XUY) #sp-location-insights
 * Mailing List
     * Subscribe / Unsubscribe to the mailing list of this Sub Project <https://lists.camaraproject.org/g/sp-location-insights>.
     * A message to the community of this Sub Project can be sent using <sp-location-insights@lists.camaraproject.org>.
