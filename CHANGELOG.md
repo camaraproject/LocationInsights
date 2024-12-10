@@ -22,8 +22,8 @@ The API definition(s) are based on
 
 - 0.1.0-rc.1 Most Frequent Location API definition **with inline documentation**:
   - OpenAPI [YAML spec file](https://github.com/camaraproject/LocationInsights/blob/r1.1/code/API_definitions/most-frequent-location.yaml)
-  - [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/blob/r1.1/code/API_definitions/most-frequent-location.yaml&nocors)
-  - [View it on Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/blob/r1.1/code/API_definitions/most-frequent-location.yaml)
+  - [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.1/code/API_definitions/most-frequent-location.yaml&nocors)
+  - [View it on Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.1/code/API_definitions/most-frequent-location.yaml)
 
 **Main changes**
 * Initial version of the API
