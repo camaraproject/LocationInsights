@@ -37,8 +37,6 @@ The API definition(s) are based on
 * Include test plan by @fernandopradocabrillo in https://github.com/camaraproject/LocationInsights/pull/13
 
 ## New Contributors
-* @hdamker made their first contribution in https://github.com/camaraproject/LocationInsights/pull/1
-* @wrathwolf made their first contribution in https://github.com/camaraproject/LocationInsights/pull/2
 * @fernandopradocabrillo made their first contribution in https://github.com/camaraproject/LocationInsights/pull/4
 * @javier-carrocalabor made their first contribution in https://github.com/camaraproject/LocationInsights/pull/15
 
