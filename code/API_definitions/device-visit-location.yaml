@@ -7,14 +7,10 @@ info:
     # Introduction
 
     This API can return the visited location of a device at a certain time, and the visited location is returned as a list of geoCode objects.
-    This API can be used in the following scenarios.
-    
-    **Anti fraud**: for some scenarios involving high-risk financial operations (such as cross-border transfers, large investments, etc.), by monitoring changes in the location visited by mobile phone numbers, potential fraudulent behavior can be detected in advance. For example, when a user usually only operates in a few provinces within the country, but suddenly has access records from overseas or unfamiliar high-risk provinces, and there are also signs of abnormal fund flow, preventive measures can be taken quickly.
-    
-    **Identity verification**: In the financial field, when users perform high-risk operations such as large transfers or changing important account information, in addition to conventional verification methods such as passwords and verification codes, identity verification can also be carried out by combining their phone number with the province they recently visited.
-    
+    This API can be used in the following scenarios.\
+    **Anti fraud**: for some scenarios involving high-risk financial operations (such as cross-border transfers, large investments, etc.), by monitoring changes in the location visited by mobile phone numbers, potential fraudulent behavior can be detected in advance. For example, when a user usually only operates in a few provinces within the country, but suddenly has access records from overseas or unfamiliar high-risk provinces, and there are also signs of abnormal fund flow, preventive measures can be taken quickly.\
+    **Identity verification**: In the financial field, when users perform high-risk operations such as large transfers or changing important account information, in addition to conventional verification methods such as passwords and verification codes, identity verification can also be carried out by combining their phone number with the province they recently visited.\
     **Remote abnormal operation detection**: For the account security management of e-commerce platforms, when users perform login, password modification, payment and other operations, they can use this api to detect whether there are abnormal operations in remote locations.
-    
     # Relevant terms and definitions
     * **Device**: A device refers to any physical entity that can connect to a network and participate in network communication.
       At least one identifier for the device (user equipment) out of four options: IPv4 address, IPv6 address, Phone number, or Network Access Identifier (not supported for this API version) assigned by the mobile network operator for the device.
@@ -27,13 +23,9 @@ info:
     Once the API Consumer provides the device infomation and specifies the time window, the API queries the relevant data. The data is retrieved from the stored information within the selected time window. The result is returned as a list of geoCode objects representing the visited locations.
 
     ## Detailed Explanation of GeoCode Object
-    **CountyCode**: This is a string type field used to specify the country code where the location is located. Following the `ISO 3166 ALPHA-2` standard, for example, "CN" represents China, "US" represents the United States, etc. On a global scale, this code ensures accurate differentiation of different countries and is an important foundational information for positioning, helping to quickly filter and identify location data for specific countries in cross-border business or data analysis.
-    
-    **codeType**： String type, used to specify the geographic encoding type used, with a fixed value of `PostlCode` in the current version. This field is designed to facilitate future expansion for different geographic coding systems, allowing capability providers to select the appropriate coding type for return based on actual situations.
-    
-    
+    **CountyCode**: This is a string type field used to specify the country code where the location is located. Following the `ISO 3166 ALPHA-2` standard, for example, "CN" represents China, "US" represents the United States, etc. On a global scale, this code ensures accurate differentiation of different countries and is an important foundational information for positioning, helping to quickly filter and identify location data for specific countries in cross-border business or data analysis.\
+    **codeType**： String type, used to specify the geographic encoding type used, with a fixed value of `PostlCode` in the current version. This field is designed to facilitate future expansion for different geographic coding systems, allowing capability providers to select the appropriate coding type for return based on actual situations.\
     **codeValue**： String type, representing the specific encoding value of the corresponding codeType. For example, when codeType is `Postal Code`, codeValue may be a postal code similar to "100000". It, together with the countryCode and codeType, forms a complete location identifier that accurately points to a specific geographic area.
-
 
     # Identifying a device from the access token
 
@@ -483,11 +475,11 @@ components:
         type: string
   examples:
    RetrieveVisitLocationSupportedResponseExample:
-    value:
-      geoCodeList:
-        - countryCode: "CN"
-          codeType: "PostalCode"
-          codeValue: "110000"
-        - countryCode: "CN"
-          codeType: "PostalCode"
-          codeValue: "310000"
+      value:
+        geoCodeList:
+          - countryCode: "CN"
+            codeType: "PostalCode"
+            codeValue: "110000"
+          - countryCode: "CN"
+            codeType: "PostalCode"
+            codeValue: "310000"
