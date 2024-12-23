@@ -102,9 +102,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RetrieveVisitLocationResponse'
-              examples:
-                RetrieveVisitLocationSupportedResponseExample:
-                  $ref: '#/components/examples/RetrieveVisitLocationSupportedResponseExample'
+              example:
+                geoCodeList:
+                  - countryCode: "CN"
+                    codeType: "PostalCode"
+                    codeValue: "110000"
+                  - countryCode: "CN"
+                    codeType: "PostalCode"
+                    codeValue: "310000"
           headers:
             x-correlator:
               $ref: '#/components/headers/x-correlator'
@@ -473,13 +478,3 @@ components:
       description: Correlation id for the different services
       schema:
         type: string
-  examples:
-   RetrieveVisitLocationSupportedResponseExample:
-      value:
-        geoCodeList:
-          - countryCode: "CN"
-            codeType: "PostalCode"
-            codeValue: "110000"
-          - countryCode: "CN"
-            codeType: "PostalCode"
-            codeValue: "310000"
