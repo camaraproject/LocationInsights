@@ -7,10 +7,12 @@ info:
     # Introduction
 
     This API can return the visited location of a device at a certain time, and the visited location is returned as a list of geoCode objects.
+    This API can be used in the following scenarios.
     
-    This API can be used in the following scenarios
     **Anti fraud**: for some scenarios involving high-risk financial operations (such as cross-border transfers, large investments, etc.), by monitoring changes in the location visited by mobile phone numbers, potential fraudulent behavior can be detected in advance. For example, when a user usually only operates in a few provinces within the country, but suddenly has access records from overseas or unfamiliar high-risk provinces, and there are also signs of abnormal fund flow, preventive measures can be taken quickly.
+    
     **Identity verification**: In the financial field, when users perform high-risk operations such as large transfers or changing important account information, in addition to conventional verification methods such as passwords and verification codes, identity verification can also be carried out by combining their phone number with the province they recently visited.
+    
     **Remote abnormal operation detection**: For the account security management of e-commerce platforms, when users perform login, password modification, payment and other operations, they can use this api to detect whether there are abnormal operations in remote locations.
     
     # Relevant terms and definitions
@@ -98,7 +100,7 @@ paths:
               $ref: '#/components/schemas/RetrieveVisitLocationRequest'
             example:
               device:
-                    phoneNumber: '+123456789'
+                phoneNumber: '+123456789'
               startTime: '2024-04-23T14:44:18.165Z'
               endTime: '2024-04-30T14:44:18.165Z'
       responses:
@@ -163,7 +165,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/geoCode'
-          minItem: 1
+          minItems: 1
     geoCode:
       type: object
       properties:
@@ -258,8 +260,6 @@ components:
       type: string
       format: ipv6
       example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
-    
-   
     ErrorInfo:
       type: object
       description: Error information
@@ -483,11 +483,11 @@ components:
         type: string
   examples:
    RetrieveVisitLocationSupportedResponseExample:
-      value:
-        geoCodeList:
-          - countryCode: "CN"
-            codeType: "PostalCode"
-            codeValue: "110000"
-          - countryCode: "CN"
-            codeType: "PostalCode"
-            codeValue: "310000"
+    value:
+      geoCodeList:
+        - countryCode: "CN"
+          codeType: "PostalCode"
+          codeValue: "110000"
+        - countryCode: "CN"
+          codeType: "PostalCode"
+          codeValue: "310000"
