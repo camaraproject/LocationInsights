@@ -134,6 +134,7 @@ components:
   securitySchemes:
     openId:
       type: openIdConnect
+      description: to support Consent Management      
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
   parameters:
     x-correlator:
