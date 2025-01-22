@@ -52,12 +52,11 @@ info:
     - For scenarios which do not have a single device identifier associated to the token during the authentication flow, e.g. 2-legged access tokens, the `device` object MUST be provided in the API request. This ensures that the device identification is explicit and valid for each API call made with these tokens.
 
   termsOfService: http://swagger.io/terms/
-  contact:
-    email: project-email@sample.com
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: wip
+  x-camara-commonalities: 0.5
 externalDocs:
   description: Product documentation at CAMARA
   url: https://github.com/camaraproject/
@@ -118,11 +117,11 @@ paths:
         '401':
           $ref: '#/components/responses/Generic401'
         '403':
-          $ref: '#/components/responses/RetrieveVisitLocationPermissionDenied403'
+          $ref: '#/components/responses/Generic403'
         '404':
           $ref: '#/components/responses/RetrieveVisitLocationNotFound404'
         '422':
-          $ref: '#/components/responses/RetrieveVisitLocationUnprocessableEntity422'
+          $ref: '#/components/responses/Generic422'
         '500':
           $ref: '#/components/responses/Generic500'
         '503':
@@ -134,6 +133,20 @@ components:
     openId:
       type: openIdConnect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
+  parameters:
+    x-correlator:
+      name: x-correlator
+      in: header
+      description: Correlation id for the different services
+      schema:
+        type: string
+        pattern: ^[a-zA-Z0-9-]{1,55}$
+  headers:
+    x-correlator:
+      description: Correlation id for the different services
+      schema:
+        type: string
+        pattern: ^[a-zA-Z0-9-]{1,55}$
   schemas:
     RetrieveVisitLocationRequest:
       type: object
@@ -287,7 +300,17 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorInfo'
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 400
+                  code:
+                    enum:
+                      - INVALID_ARGUMENT
+                      - DEVICE_VISIT_LOCATION.INVALID_END_DATE
           examples:
             GENERIC_400_INVALID_ARGUMENT:
               description: Invalid Argument. Generic Syntax Exception
@@ -308,7 +331,17 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorInfo"
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 401
+                  code:
+                    enum:
+                      - UNAUTHENTICATED
+                      - AUTHENTICATION_REQUIRED
           examples:
             GENERIC_401_UNAUTHENTICATED:
               description: Request cannot be authenticated
@@ -322,19 +355,25 @@ components:
                 status: 401
                 code: AUTHENTICATION_REQUIRED
                 message: New authentication is required.
-    RetrieveVisitLocationPermissionDenied403:
-      description: |-
-        Forbidden.
-        In addition to regular scenario of `PERMISSION_DENIED`, another scenarios may exist:
-
-        - Phone number cannot be deducted from access token context.("code": "INVALID_TOKEN_CONTEXT","message": "Phone number is not consistent with access token.")
+    Generic403:
+      description: Forbidden
       headers:
         x-correlator:
-          $ref: '#/components/headers/x-correlator'
+          $ref: "#/components/headers/x-correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorInfo'
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 403
+                  code:
+                    enum:
+                      - PERMISSION_DENIED
+                      - INVALID_TOKEN_CONTEXT
           examples:
             GENERIC_403_PERMISSION_DENIED:
               description: Permission denied. OAuth2 token access does not have the required scope or when the user fails operational security
@@ -347,7 +386,7 @@ components:
               value:
                 status: 403
                 code: INVALID_TOKEN_CONTEXT
-                message: Phone number is not consistent with access token.
+                message: "{{field}} is not consistent with access token."
     RetrieveVisitLocationNotFound404:
       description: |-
         Not found.
@@ -361,7 +400,18 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorInfo'
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 404
+                  code:
+                    enum:
+                      - NOT_FOUND
+                      - IDENTIFIER_NOT_FOUND
+                      - DEVICE_VISIT_LOCATION.DATA_NOT_FOUND
           examples:
             GENERIC_404_NOT_FOUND:
               description: Resource is not found
@@ -381,46 +431,166 @@ components:
                 status: 404
                 code: DEVICE_VISIT_LOCATION.DATA_NOT_FOUND
                 message: Unable to find the visit location information of the device within the given time window.
-    RetrieveVisitLocationUnprocessableEntity422:
-      description: |-
-        Unprocessable Content.
-
-        - Inconsistency between device identifiers not pointing to the same device ("code": "DEVICE_IDENTIFIERS_MISMATCH","message": "Provided device identifiers are not consistent.").
-        - Service is not available for the provided device ("code": "DEVICE_NOT_APPLICABLE","message": "The service is not available for the provided device.").
-        - None of the provided device identifiers are supported by the implementation ("code": "UNSUPPORTED_DEVICE_IDENTIFIERS","message": "Supported device identifiers are: ...").
-        - The device identifier is not included in the request and the device information cannot be derived from the 3-legged access token ("code": "UNIDENTIFIABLE_DEVICE","message": "The device cannot be identified.").
+    Generic405:
+      description: Method Not Allowed
       headers:
         x-correlator:
-          $ref: '#/components/headers/x-correlator'
+          $ref: "#/components/headers/x-correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorInfo'
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 405
+                  code:
+                    enum:
+                      - METHOD_NOT_ALLOWED
           examples:
-            GENERIC_422_DEVICE_IDENTIFIERS_MISMATCH:
-              description: Inconsistency between device identifiers not pointing to the same device
+            GENERIC_405_METHOD_NOT_ALLOWED:
+              description: Invalid HTTP verb used with a given endpoint
+              value:
+                status: 405
+                code: METHOD_NOT_ALLOWED
+                message: The requested method is not allowed/supported on the target resource.
+    Generic406:
+      description: Not Acceptable
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 406
+                  code:
+                    enum:
+                      - NOT_ACCEPTABLE
+          examples:
+            GENERIC_406_NOT_ACCEPTABLE:
+              description: API Server does not accept the media type (`Accept-*` header) indicated by API client
+              value:
+                status: 406
+                code: NOT_ACCEPTABLE
+                message: The server cannot produce a response matching the content requested by the client through `Accept-*` headers.
+    Generic412:
+      description: Failed precondition
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 412
+                  code:
+                    enum:
+                      - FAILED_PRECONDITION
+          examples:
+            GENERIC_412_FAILED_PRECONDITION:
+              description: Indication by the API Server that the request cannot be processed in current system state
+              value:
+                status: 412
+                code: FAILED_PRECONDITION
+                message: Request cannot be executed in the current system state.
+    Generic422:
+      description: Unprocessable Content
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 422
+                  code:
+                    enum:
+                      - IDENTIFIER_MISMATCH
+                      - SERVICE_NOT_APPLICABLE
+                      - MISSING_IDENTIFIER
+                      - UNSUPPORTED_IDENTIFIER
+                      - UNNECESSARY_IDENTIFIER
+          examples:
+            GENERIC_422_IDENTIFIER_MISMATCH:
+              description: Inconsistency between identifiers not pointing to the same device
               value:
                 status: 422
-                code: DEVICE_IDENTIFIERS_MISMATCH
-                message: "Provided device identifiers are not consistent"
-            GENERIC_422_DEVICE_NOT_APPLICABLE:
-              description: Service is not available for the provided device
+                code: IDENTIFIER_MISMATCH
+                message: Provided identifiers are not consistent.
+            GENERIC_422_SERVICE_NOT_APPLICABLE:
+              description: Service not applicable for the provided identifier
               value:
                 status: 422
-                code: DEVICE_NOT_APPLICABLE
-                message: "The service is not available for the provided device"
-            GENERIC_422_UNSUPPORTED_DEVICE_IDENTIFIERS:
-              description: None of the provided device identifiers is supported by the implementation
+                code: SERVICE_NOT_APPLICABLE
+                message: The service is not available for the provided identifier.
+            GENERIC_422_MISSING_IDENTIFIER:
+              description: An identifier is not included in the request and the device or phone number identification cannot be derived from the 3-legged access token
               value:
                 status: 422
-                code: UNSUPPORTED_DEVICE_IDENTIFIERS
-                message: "Supported device identifiers are: ..."
-            GENERIC_422_UNIDENTIFIABLE_DEVICE:
-              description: The device identifier is not included in the request and the device information cannot be derived from the 3-legged access token
-              value:
-                status: 422
-                code: UNIDENTIFIABLE_DEVICE
+                code: MISSING_IDENTIFIER
                 message: The device cannot be identified.
+            GENERIC_422_UNSUPPORTED_IDENTIFIER:
+              description: None of the provided identifiers is supported by the implementation
+              value:
+                status: 422
+                code: UNSUPPORTED_IDENTIFIER
+                message: The identifier provided is not supported.
+            GENERIC_422_UNNECESSARY_IDENTIFIER:
+              description: An explicit identifier is provided when a device or phone number has already been identified from the access token
+              value:
+                status: 422
+                code: UNNECESSARY_IDENTIFIER
+                message: The device is already identified by the access token.
+    Generic429:
+      description: Too Many Requests
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 429
+                  code:
+                    enum:
+                      - QUOTA_EXCEEDED
+                      - TOO_MANY_REQUESTS
+          examples:
+            GENERIC_429_QUOTA_EXCEEDED:
+              description: Request is rejected due to exceeding a business quota limit
+              value:
+                status: 429
+                code: QUOTA_EXCEEDED
+                message: Either out of resource quota or reaching rate limiting.
+            GENERIC_429_TOO_MANY_REQUESTS:
+              description: API Server request limit is overpassed
+              value:
+                status: 429
+                code: TOO_MANY_REQUESTS
+                message: Either out of resource quota or reaching rate limiting.
     Generic500:
       description: Internal Server Error
       headers:
@@ -437,6 +607,56 @@ components:
                 status: 500
                 code: INTERNAL
                 message: Unknown server error. Typically a server bug.
+    Generic501:
+      description: Not Implemented
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 501
+                  code:
+                    enum:
+                      - NOT_IMPLEMENTED
+          examples:
+            GENERIC_501_NOT_IMPLEMENTED:
+              description: Service not implemented. The use of this code should be avoided as far as possible to get the objective to reach aligned implementations
+              value:
+                status: 501
+                code: NOT_IMPLEMENTED
+                message: This functionality is not implemented yet.
+    Generic502:
+      description: Bad Gateway
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 502
+                  code:
+                    enum:
+                      - BAD_GATEWAY
+          examples:
+            GENERIC_502_BAD_GATEWAY:
+              description: Internal routing problem in the Server side that blocks to manage the service properly
+              value:
+                status: 502
+                code: BAD_GATEWAY
+                message: An upstream internal service cannot be reached.
     Generic503:
       description: Service Unavailable
       headers:
@@ -445,7 +665,16 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ErrorInfo"
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 503
+                  code:
+                    enum:
+                      - UNAVAILABLE
           examples:
             GENERIC_503_UNAVAILABLE:
               description: Service is not available. Temporary situation usually related to maintenance process in the server side
@@ -454,27 +683,27 @@ components:
                 code: UNAVAILABLE
                 message: Service Unavailable.
     Generic504:
-      description: Request timeout exceeded
+      description: Gateway Timeout
       headers:
         x-correlator:
-          $ref: '#/components/headers/x-correlator'
+          $ref: "#/components/headers/x-correlator"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorInfo'
-          example:
-            code: REQUEST_TIMEOUT_EXCEEDED
-            status: 504
-            message: Request timeout exceeded
-  headers:
-    x-correlator:
-      description: Correlation id for the different services
-      schema:
-        type: string
-  parameters:
-    x-correlator:
-      name: x-correlator
-      in: header
-      description: Correlation id for the different services
-      schema:
-        type: string
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 504
+                  code:
+                    enum:
+                      - TIMEOUT
+          examples:
+            GENERIC_504_TIMEOUT:
+              description: API Server Timeout
+              value:
+                status: 504
+                code: TIMEOUT
+                message: Request timeout exceeded.
