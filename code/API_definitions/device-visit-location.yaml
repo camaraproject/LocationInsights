@@ -426,7 +426,7 @@ components:
               description: Device identifier not found
               value:
                 status: 404
-                code: DEVICE_NOT_FOUND
+                code: IDENTIFIER_NOT_FOUND
                 message: Device identifier not found.
             DATA_NOT_FOUND:
               description: Unable to find the visit location information of the device within the given time window
