@@ -1,6 +1,6 @@
 # API Readiness Checklist
 
-Checklist for most-frequent-location 0.1.0-rc.1 in r1.1
+Checklist for most-frequent-location 0.1.0 in r1.2
 
 | Nr | API release assets  | alpha | release-candidate |  initial<br>public | stable<br> public | Status | Comments |
 |----|----------------------------------------------|:-----:|:-----------------:|:-------:|:------:|:----:|:----:|
