@@ -8,14 +8,13 @@
 
 # LocationInsights
 
-Repository to describe, develop, document and test the LocationInsights API family
+Repository to describe, develop, document and test the LocationInsights APIs
 
 ## Scope
 
 * Service APIs for “LocationInsights” (see APIBacklog.md)  
-* It provides the customer with the ability to:  
+* It provides the API  Consumer with the ability to:  
   * "MostFrequentLocation": validate, in terms of scoring, of the user's expected home area
-  * "DeviceVisitLocation" query the latest visit locations of a device within a given time window
   * NOTE: The scope of this API family should be limited (at least at the first stage) to 4G and 5G.  
 * Describe, develop, document and test the APIs (with 1-2 Telcos)  
 * Started: May 2024
