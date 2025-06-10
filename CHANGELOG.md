@@ -32,7 +32,7 @@ The API definition(s) are based on
 - API definition **with inline documentation**:
   - OpenAPI [YAML spec file](https://github.com/camaraproject/LocationInsights/blob/r1.2/code/API_definitions/most-frequent-location.yaml)
   - [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.2/code/API_definitions/most-frequent-location.yaml&nocors)
-  - [View it on Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.2/code/API_definitions/most-frequent-location.yaml)
+  - [View it on Swagger Editor](https://camaraproject.github.io/swagger-ui/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.2/code/API_definitions/most-frequent-location.yaml)
 
 **Main changes**
 * No new changes included from version v0.1.0-rc.1
@@ -56,7 +56,7 @@ The API definition(s) are based on
 - 0.1.0-rc.1 Most Frequent Location API definition **with inline documentation**:
   - OpenAPI [YAML spec file](https://github.com/camaraproject/LocationInsights/blob/r1.1/code/API_definitions/most-frequent-location.yaml)
   - [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.1/code/API_definitions/most-frequent-location.yaml&nocors)
-  - [View it on Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.1/code/API_definitions/most-frequent-location.yaml)
+  - [View it on Swagger Editor](https://camaraproject.github.io/swagger-ui/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.1/code/API_definitions/most-frequent-location.yaml)
 
 **Main changes**
 * Initial version of the API

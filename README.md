@@ -25,7 +25,7 @@ Repository to describe, develop, document and test the LocationInsights APIs
 
 * `NEW`:**The latest release of CAMARA Location Insights is [r1.2](https://github.com/camaraproject/LocationInsights/tree/r1.2)**. The release Tag is [r1.2](https://github.com/camaraproject/LocationInsights/releases/tag/r1.2).
   - Contains the following API definitions **with inline documentation**:
-    - 0.1.0 most-frequent-location: [YAML spec file](https://github.com/camaraproject/LocationInsights/blob/r1.2/code/API_definitions/most-frequent-location.yaml) | [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.2/code/API_definitions/most-frequent-location.yaml&nocors) | [View it on Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.2/code/API_definitions/most-frequent-location.yaml&nocors)
+    - 0.1.0 most-frequent-location: [YAML spec file](https://github.com/camaraproject/LocationInsights/blob/r1.2/code/API_definitions/most-frequent-location.yaml) | [View it on ReDoc](https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.2/code/API_definitions/most-frequent-location.yaml&nocors) | [View it on Swagger Editor](https://camaraproject.github.io/swagger-ui/?url=https://raw.githubusercontent.com/camaraproject/LocationInsights/r1.2/code/API_definitions/most-frequent-location.yaml&nocors)
 
 ## Contributing
 
