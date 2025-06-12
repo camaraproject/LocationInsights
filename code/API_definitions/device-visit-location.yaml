@@ -1,0 +1,712 @@
+openapi: 3.0.3
+info:
+  title: Device Visit Location
+  description: |
+    The Device Visit Location API provides customers with the ability to query the visit locations of a device during a certain time period.
+
+    # Introduction
+
+    This API can return the visited location of a device at a certain time, and the visited location is returned as a list of geoCode objects.
+    This API can be used in the following scenarios.\
+    **Anti fraud**: for some scenarios involving high-risk financial operations (such as cross-border transfers, large investments, etc.), by monitoring changes in the location visited by mobile phone numbers, potential fraudulent behavior can be detected in advance. For example, when a user usually only operates in a few provinces within the country, but suddenly has access records from overseas or unfamiliar high-risk provinces, and there are also signs of abnormal fund flow, preventive measures can be taken quickly.\
+    **Identity verification**: In the financial field, when users perform high-risk operations such as large transfers or changing important account information, in addition to conventional verification methods such as passwords and verification codes, identity verification can also be carried out by combining their phone number with the province they recently visited.\
+    **Remote abnormal operation detection**: For the account security management of e-commerce platforms, when users perform login, password modification, payment and other operations, they can use this api to detect whether there are abnormal operations in remote locations.
+    # Relevant terms and definitions
+    * **Device**: A device refers to any physical entity that can connect to a network and participate in network communication.
+      At least one identifier for the device (user equipment) out of four options: IPv4 address, IPv6 address, Phone number, or Network Access Identifier (not supported for this API version) assigned by the mobile network operator for the device.
+    * **geoCode**: An object with the following attributes:
+      - **countryCode**: The code of the country.Following the `ISO 3166 ALPHA-2` standard.
+      - **codeType**: The type of code, such as "PostlCode".
+      - **codeValue**: The actual value of the code.
+
+    # API Functionality
+    Once the API Consumer provides the device infomation and specifies the time window, the API queries the relevant data. The data is retrieved from the stored information within the selected time window. The result is returned as a list of geoCode objects representing the visited locations.
+
+    ## Detailed Explanation of GeoCode Object
+    **CountyCode**: This is a string type field used to specify the country code where the location is located. Following the `ISO 3166 ALPHA-2` standard, for example, "CN" represents China, "US" represents the United States, etc. On a global scale, this code ensures accurate differentiation of different countries and is an important foundational information for positioning, helping to quickly filter and identify location data for specific countries in cross-border business or data analysis.\
+    **codeType**： String type, used to specify the geographic encoding type used, with a fixed value of `PostlCode` in the current version. This field is designed to facilitate future expansion for different geographic coding systems, allowing capability providers to select the appropriate coding type for return based on actual situations.\
+    **codeValue**： String type, representing the specific encoding value of the corresponding codeType. For example, when codeType is `Postal Code`, codeValue may be a postal code similar to "100000". It, together with the countryCode and codeType, forms a complete location identifier that accurately points to a specific geographic area.
+
+    # Identifying a device from the access token
+
+    This specification defines the `device` object field as optional in API requests, specifically in cases where the API is accessed using a 3-legged access token, and the device can be uniquely identified by the token. This approach simplifies API usage for API consumers by relying on the device information associated with the access token used to invoke the API.
+
+    ## Handling of device information:
+
+    ### Optional device object for 3-legged tokens:
+
+    - When using a 3-legged access token, the device associated with the access token must be considered as the device for the API request. This means that the device object is not required in the request, and if included it must identify the same device, therefore **it is recommended NOT to include it in these scenarios** to simplify the API usage and avoid additional validations.
+
+    ### Validation mechanism:
+
+    - The server will extract the device identification from the access token, if available.
+    - If the API request additionally includes a `device` object when using a 3-legged access token, the API will validate that the device identifier provided matches the one associated with the access token.
+    - If there is a mismatch, the API will respond with a `403 - INVALID_TOKEN_CONTEXT` error, indicating that the device information in the request does not match the token.
+
+    ### Error handling for unidentifiable devices:
+
+    - If the `device` object is not included in the request and the device information cannot be derived from the 3-legged access token, the server will return a 422 `UNIDENTIFIABLE_DEVICE` error.
+
+    ### Restrictions for tokens without an associated authenticated identifier:
+
+    - For scenarios which do not have a single device identifier associated to the token during the authentication flow, e.g. 2-legged access tokens, the `device` object MUST be provided in the API request. This ensures that the device identification is explicit and valid for each API call made with these tokens.
+
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: sp-location-insights@lists.camaraproject.org
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: wip
+  x-camara-commonalities: 0.5
+externalDocs:
+  description: Product documentation at CAMARA
+  url: https://github.com/camaraproject/
+servers:
+  - url: "{apiRoot}/device-visit-location/vwip"
+    variables:
+      apiRoot:
+        default: http://localhost:9091
+        description: API root
+tags:
+  - name: DeviceVisitLocation
+    description: Operations to retrieve device visit location information.
+paths:
+  /retrieve:
+    post:
+      security:
+        - openId:
+            - device-visit-location:retrieve
+      tags:
+        - DeviceVisitLocation
+      summary: Retrieves device visit location information
+      description: >-
+        Retrieves the latest visit locations of a device within a given time window.
+      operationId: retrieveDeviceVisitLocation
+      parameters:
+        - $ref: '#/components/parameters/x-correlator'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrieveVisitLocationRequest'
+            example:
+              device:
+                phoneNumber: '+123456789'
+              startTime: '2024-04-23T14:44:18.165Z'
+              endTime: '2024-04-30T14:44:18.165Z'
+      responses:
+        '200':
+          description: Device Visit Location query result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveVisitLocationResponse'
+              example:
+                geoCodeList:
+                  - countryCode: "CN"
+                    codeType: "PostalCode"
+                    codeValue: "110000"
+                  - countryCode: "CN"
+                    codeType: "PostalCode"
+                    codeValue: "310000"
+          headers:
+            x-correlator:
+              $ref: '#/components/headers/x-correlator'
+        '400':
+          $ref: '#/components/responses/RetrieveVisitLocationBadRequest400'
+        '401':
+          $ref: '#/components/responses/Generic401'
+        '403':
+          $ref: '#/components/responses/Generic403'
+        '404':
+          $ref: '#/components/responses/RetrieveVisitLocationNotFound404'
+        '422':
+          $ref: '#/components/responses/Generic422'
+        '500':
+          $ref: '#/components/responses/Generic500'
+        '503':
+          $ref: '#/components/responses/Generic503'
+        '504':
+          $ref: '#/components/responses/Generic504'
+components:
+  securitySchemes:
+    openId:
+      type: openIdConnect
+      description: to support Consent Management
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
+  parameters:
+    x-correlator:
+      name: x-correlator
+      in: header
+      description: Correlation id for the different services
+      schema:
+        type: string
+        pattern: ^[a-zA-Z0-9-]{1,55}$
+  headers:
+    x-correlator:
+      description: Correlation id for the different services
+      schema:
+        type: string
+        pattern: ^[a-zA-Z0-9-]{1,55}$
+  schemas:
+    RetrieveVisitLocationRequest:
+      type: object
+      description: Request with a device as identifier,starttime and endtime
+      required:
+        - startTime
+        - endTime
+      properties:
+        device:
+          $ref: '#/components/schemas/Device'
+        startTime:
+          type: string
+          format: date-time
+          description: Start date time of the time window. If not provided, the default is the past seven days from the request time. It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ.
+        endTime:
+          type: string
+          format: date-time
+          description: End date time of the time window. If not provided, the default is the past seven days from the request time. It must follow [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6) and must have time zone. Recommended format is yyyy-MM-dd'T'HH:mm:ss.SSSZ.
+    RetrieveVisitLocationResponse:
+      type: object
+      description: Contains the list of geoCode objects representing the visited locations.
+      required:
+        - geoCodeList
+      properties:
+        geoCodeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/geoCode'
+          minItems: 1
+    geoCode:
+      type: object
+      properties:
+        countryCode:
+          type: string
+          description: Code for the country where the location is is located. Following the `ISO 3166 ALPHA-2` standard, for example, "CN" represents China, "US" represents the United States, etc.
+        codeType:
+          type: string
+          description: The type of code.This field is used to specify the geographic encoding type used, with a fixed value of `PostlCode` in the current version.
+        codeValue:
+          type: string
+          description: The actual value of the code,representing the specific encoding value of the corresponding codeType.
+      required:
+        - countryCode
+        - codeType
+        - codeValue
+    Device:
+      description: |-
+        End-user equipment able to connect to a mobile network. Examples of devices include smartphones or IoT sensors/actuators.
+
+        The developer can choose to provide the below specified device identifiers:
+
+        * `ipv4Address`
+        * `ipv6Address`
+        * `phoneNumber`
+        * `networkAccessIdentifier`
+
+        NOTE1: the MNO might support only a subset of these options. The API invoker can provide multiple identifiers to be compatible across different MNOs. In this case the identifiers MUST belong to the same device.
+
+        NOTE2: for the Commonalities release v0.4, we are enforcing that the networkAccessIdentifier is only part of the schema for future-proofing, and CAMARA does not currently allow its use. After the CAMARA meta-release work is concluded and the relevant issues are resolved, its use will need to be explicitly documented in the guidelines.
+      type: object
+      properties:
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'
+        networkAccessIdentifier:
+          $ref: '#/components/schemas/NetworkAccessIdentifier'
+        ipv4Address:
+          $ref: '#/components/schemas/DeviceIpv4Addr'
+        ipv6Address:
+          $ref: '#/components/schemas/DeviceIpv6Address'
+      minProperties: 1
+    PhoneNumber:
+      description: A public identifier addressing a telephone subscription. In mobile networks it corresponds to the MSISDN (Mobile Station International Subscriber Directory Number). In order to be globally unique it has to be formatted in international format, according to E.164 standard, prefixed with '+'.
+      type: string
+      pattern: '^\+[1-9][0-9]{4,14}$'
+      example: "+123456789"
+    NetworkAccessIdentifier:
+      description: A public identifier addressing a subscription in a mobile network. In 3GPP terminology, it corresponds to the GPSI formatted with the External Identifier ({Local Identifier}@{Domain Identifier}). Unlike the telephone number, the network access
+        identifier is not subjected to portability ruling in force, and is individually managed by each operator.
+      type: string
+      example: 123456789@domain.com
+    DeviceIpv4Addr:
+      type: object
+      description: |-
+        The device should be identified by either the public (observed) IP address and port as seen by the application server, or the private (local) and any public (observed) IP addresses in use by the device (this information can be obtained by various means, for example from some DNS servers).
+
+        If the allocated and observed IP addresses are the same (i.e. NAT is not in use) then  the same address should be specified for both publicAddress and privateAddress.
+
+        If NAT64 is in use, the device should be identified by its publicAddress and publicPort, or separately by its allocated IPv6 address (field ipv6Address of the Device object)
+
+        In all cases, publicAddress must be specified, along with at least one of either privateAddress or publicPort, dependent upon which is known. In general, mobile devices cannot be identified by their public IPv4 address alone.
+      properties:
+        publicAddress:
+          $ref: '#/components/schemas/SingleIpv4Addr'
+        privateAddress:
+          $ref: '#/components/schemas/SingleIpv4Addr'
+        publicPort:
+          $ref: '#/components/schemas/Port'
+      anyOf:
+        - required:
+            - publicAddress
+            - privateAddress
+        - required:
+            - publicAddress
+            - publicPort
+      example:
+        publicAddress: 84.125.93.10
+        publicPort: 59765
+    SingleIpv4Addr:
+      description: A single IPv4 address with no subnet mask
+      type: string
+      format: ipv4
+      example: 84.125.93.10
+    Port:
+      description: TCP or UDP port number
+      type: integer
+      minimum: 0
+      maximum: 65535
+    DeviceIpv6Address:
+      description: |-
+        The device should be identified by the observed IPv6 address, or by any single IPv6 address from within the subnet allocated to the device (e.g. adding ::0 to the /64 prefix).
+      type: string
+      format: ipv6
+      example: 2001:db8:85a3:8d3:1319:8a2e:370:7344
+    ErrorInfo:
+      type: object
+      description: Error information
+      required:
+        - message
+        - status
+        - code
+      properties:
+        message:
+          type: string
+          description: A human readable description of what the event represent
+        status:
+          type: integer
+          description: HTTP response status code
+        code:
+          type: string
+          description: Friendly Code to describe the error
+  responses:
+    RetrieveVisitLocationBadRequest400:
+      description: |-
+        Bad Request.
+        In addition to regular scenario of `INVALID_ARGUMENT`, other scenarios may exist:
+
+        - Indicated endTime is earlier than the startTime ("code": "DEVICE_VISIT_LOCATION.INVALID_END_DATE","message": "Indicated endTime is earlier than the startTime.")
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 400
+                  code:
+                    enum:
+                      - INVALID_ARGUMENT
+                      - DEVICE_VISIT_LOCATION.INVALID_END_DATE
+          examples:
+            GENERIC_400_INVALID_ARGUMENT:
+              description: Invalid Argument. Generic Syntax Exception
+              value:
+                status: 400
+                code: INVALID_ARGUMENT
+                message: Client specified an invalid argument, request body or query param.
+            GENERIC_400_INVALID_END_DATE:
+              value:
+                status: 400
+                code: DEVICE_VISIT_LOCATION.INVALID_END_DATE
+                message: "Indicated endTime is earlier than the startTime."
+    Generic401:
+      description: Unauthorized
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 401
+                  code:
+                    enum:
+                      - UNAUTHENTICATED
+                      - AUTHENTICATION_REQUIRED
+          examples:
+            GENERIC_401_UNAUTHENTICATED:
+              description: Request cannot be authenticated
+              value:
+                status: 401
+                code: UNAUTHENTICATED
+                message: Request not authenticated due to missing, invalid, or expired credentials.
+            GENERIC_401_AUTHENTICATION_REQUIRED:
+              description: New authentication is needed, authentication is no longer valid
+              value:
+                status: 401
+                code: AUTHENTICATION_REQUIRED
+                message: New authentication is required.
+    Generic403:
+      description: Forbidden
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 403
+                  code:
+                    enum:
+                      - PERMISSION_DENIED
+                      - INVALID_TOKEN_CONTEXT
+          examples:
+            GENERIC_403_PERMISSION_DENIED:
+              description: Permission denied. OAuth2 token access does not have the required scope or when the user fails operational security
+              value:
+                status: 403
+                code: PERMISSION_DENIED
+                message: Client does not have sufficient permissions to perform this action.
+            GENERIC_403_INVALID_TOKEN_CONTEXT:
+              description: Reflect some inconsistency between information in some field of the API and the related OAuth2 Token
+              value:
+                status: 403
+                code: INVALID_TOKEN_CONTEXT
+                message: "{{field}} is not consistent with access token."
+    RetrieveVisitLocationNotFound404:
+      description: |-
+        Not found.
+        In addition to regular scenario of `NOT_FOUND`, other scenarios may exist:
+
+        - Device identifier not found ("code": "DEVICE_NOT_FOUND","message": "Device identifier not found.").
+        - Unable to find the visit location information of the device within the given time window, it may be due to the device being offline ("code": "DEVICE_VISIT_LOCATION.DATA_NOT_FOUND","message": "Unable to find the visit location information of the device within the given time window").
+      headers:
+        x-correlator:
+          $ref: '#/components/headers/x-correlator'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 404
+                  code:
+                    enum:
+                      - NOT_FOUND
+                      - IDENTIFIER_NOT_FOUND
+                      - DEVICE_VISIT_LOCATION.DATA_NOT_FOUND
+          examples:
+            GENERIC_404_NOT_FOUND:
+              description: Resource is not found
+              value:
+                status: 404
+                code: NOT_FOUND
+                message: The specified resource is not found.
+            GENERIC_404_DEVICE_NOT_FOUND:
+              description: Device identifier not found
+              value:
+                status: 404
+                code: IDENTIFIER_NOT_FOUND
+                message: Device identifier not found.
+            DATA_NOT_FOUND:
+              description: Unable to find the visit location information of the device within the given time window
+              value:
+                status: 404
+                code: DEVICE_VISIT_LOCATION.DATA_NOT_FOUND
+                message: Unable to find the visit location information of the device within the given time window.
+    Generic405:
+      description: Method Not Allowed
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 405
+                  code:
+                    enum:
+                      - METHOD_NOT_ALLOWED
+          examples:
+            GENERIC_405_METHOD_NOT_ALLOWED:
+              description: Invalid HTTP verb used with a given endpoint
+              value:
+                status: 405
+                code: METHOD_NOT_ALLOWED
+                message: The requested method is not allowed/supported on the target resource.
+    Generic406:
+      description: Not Acceptable
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 406
+                  code:
+                    enum:
+                      - NOT_ACCEPTABLE
+          examples:
+            GENERIC_406_NOT_ACCEPTABLE:
+              description: API Server does not accept the media type (`Accept-*` header) indicated by API client
+              value:
+                status: 406
+                code: NOT_ACCEPTABLE
+                message: The server cannot produce a response matching the content requested by the client through `Accept-*` headers.
+    Generic412:
+      description: Failed precondition
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 412
+                  code:
+                    enum:
+                      - FAILED_PRECONDITION
+          examples:
+            GENERIC_412_FAILED_PRECONDITION:
+              description: Indication by the API Server that the request cannot be processed in current system state
+              value:
+                status: 412
+                code: FAILED_PRECONDITION
+                message: Request cannot be executed in the current system state.
+    Generic422:
+      description: Unprocessable Content
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 422
+                  code:
+                    enum:
+                      - IDENTIFIER_MISMATCH
+                      - SERVICE_NOT_APPLICABLE
+                      - MISSING_IDENTIFIER
+                      - UNSUPPORTED_IDENTIFIER
+                      - UNNECESSARY_IDENTIFIER
+          examples:
+            GENERIC_422_IDENTIFIER_MISMATCH:
+              description: Inconsistency between identifiers not pointing to the same device
+              value:
+                status: 422
+                code: IDENTIFIER_MISMATCH
+                message: Provided identifiers are not consistent.
+            GENERIC_422_SERVICE_NOT_APPLICABLE:
+              description: Service not applicable for the provided identifier
+              value:
+                status: 422
+                code: SERVICE_NOT_APPLICABLE
+                message: The service is not available for the provided identifier.
+            GENERIC_422_MISSING_IDENTIFIER:
+              description: An identifier is not included in the request and the device or phone number identification cannot be derived from the 3-legged access token
+              value:
+                status: 422
+                code: MISSING_IDENTIFIER
+                message: The device cannot be identified.
+            GENERIC_422_UNSUPPORTED_IDENTIFIER:
+              description: None of the provided identifiers is supported by the implementation
+              value:
+                status: 422
+                code: UNSUPPORTED_IDENTIFIER
+                message: The identifier provided is not supported.
+            GENERIC_422_UNNECESSARY_IDENTIFIER:
+              description: An explicit identifier is provided when a device or phone number has already been identified from the access token
+              value:
+                status: 422
+                code: UNNECESSARY_IDENTIFIER
+                message: The device is already identified by the access token.
+    Generic429:
+      description: Too Many Requests
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 429
+                  code:
+                    enum:
+                      - QUOTA_EXCEEDED
+                      - TOO_MANY_REQUESTS
+          examples:
+            GENERIC_429_QUOTA_EXCEEDED:
+              description: Request is rejected due to exceeding a business quota limit
+              value:
+                status: 429
+                code: QUOTA_EXCEEDED
+                message: Either out of resource quota or reaching rate limiting.
+            GENERIC_429_TOO_MANY_REQUESTS:
+              description: API Server request limit is overpassed
+              value:
+                status: 429
+                code: TOO_MANY_REQUESTS
+                message: Either out of resource quota or reaching rate limiting.
+    Generic500:
+      description: Internal Server Error
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorInfo"
+          examples:
+            GENERIC_500_INTERNAL:
+              description: Problem in Server side. Regular Server Exception
+              value:
+                status: 500
+                code: INTERNAL
+                message: Unknown server error. Typically a server bug.
+    Generic501:
+      description: Not Implemented
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 501
+                  code:
+                    enum:
+                      - NOT_IMPLEMENTED
+          examples:
+            GENERIC_501_NOT_IMPLEMENTED:
+              description: Service not implemented. The use of this code should be avoided as far as possible to get the objective to reach aligned implementations
+              value:
+                status: 501
+                code: NOT_IMPLEMENTED
+                message: This functionality is not implemented yet.
+    Generic502:
+      description: Bad Gateway
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 502
+                  code:
+                    enum:
+                      - BAD_GATEWAY
+          examples:
+            GENERIC_502_BAD_GATEWAY:
+              description: Internal routing problem in the Server side that blocks to manage the service properly
+              value:
+                status: 502
+                code: BAD_GATEWAY
+                message: An upstream internal service cannot be reached.
+    Generic503:
+      description: Service Unavailable
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 503
+                  code:
+                    enum:
+                      - UNAVAILABLE
+          examples:
+            GENERIC_503_UNAVAILABLE:
+              description: Service is not available. Temporary situation usually related to maintenance process in the server side
+              value:
+                status: 503
+                code: UNAVAILABLE
+                message: Service Unavailable.
+    Generic504:
+      description: Gateway Timeout
+      headers:
+        x-correlator:
+          $ref: "#/components/headers/x-correlator"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorInfo"
+              - type: object
+                properties:
+                  status:
+                    enum:
+                      - 504
+                  code:
+                    enum:
+                      - TIMEOUT
+          examples:
+            GENERIC_504_TIMEOUT:
+              description: API Server Timeout
+              value:
+                status: 504
+                code: TIMEOUT
+                message: Request timeout exceeded.
