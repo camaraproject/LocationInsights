@@ -5,17 +5,20 @@
 <a href="https://github.com/camaraproject/LocationInsights" title="Repo Size"><img src="https://img.shields.io/github/repo-size/camaraproject/LocationInsights?style=plastic"></a>
 <a href="https://github.com/camaraproject/LocationInsights/blob/main/LICENSE" title="License"><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg?style=plastic"></a>
 <a href="https://github.com/camaraproject/LocationInsights/releases/latest" title="Latest Release"><img src="https://img.shields.io/github/release/camaraproject/LocationInsights?style=plastic"></a>
+<a href="https://github.com/camaraproject/Governance/blob/main/ProjectStructureAndRoles.md" title="Sandbox API Repository"><img src="https://img.shields.io/badge/Sandbox%20API%20Repository-yellow?style=plastic"></a>
 
 # LocationInsights
 
-Repository to describe, develop, document and test the LocationInsights APIs
+Sandbox API Repository to describe, develop, document, and test the LocationInsights Service API(s). The repository does not yet belong to a CAMARA Sub Project.
+
+* API Repository [wiki page](https://lf-camaraproject.atlassian.net/wiki/x/XjPe)
 
 ## Scope
 
 * Service APIs for “LocationInsights” (see APIBacklog.md)  
 * It provides the API  Consumer with the ability to:  
   * "MostFrequentLocation": validate, in terms of scoring, of the user's expected home area
-  * NOTE: The scope of this API family should be limited (at least at the first stage) to 4G and 5G.  
+  * NOTE: The scope of these APIs should be limited (at least at the first stage) to 4G and 5G.  
 * Describe, develop, document and test the APIs (with 1-2 Telcos)  
 * Started: May 2024
 
