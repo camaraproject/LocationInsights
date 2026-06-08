@@ -1,4 +1,4 @@
-Feature: CAMARA Most Frequent Location API, v0.2.0
+Feature: CAMARA Most Frequent Location API, vwip
   # Input to be provided by the implementation to the tester
   #
   # Implementation indications:
@@ -14,7 +14,7 @@ Feature: CAMARA Most Frequent Location API, v0.2.0
 
   Background: Common verifyFrequentLocation setup
     Given an environment at "apiRoot"
-    And the resource "/most-frequent-location/v0.2/verify"
+    And the resource "/most-frequent-location/vwip/verify"
     And the header "Content-Type" is set to "application/json"
     And the header "Authorization" is set to a valid access token
     And the header "x-correlator" complies with the schema at "#/components/schemas/XCorrelator"
